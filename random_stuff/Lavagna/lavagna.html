@@ -1,0 +1,1108 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lavagna Post-it (locale)</title>
+<style>
+  :root{
+    --bg: #f4f6f8;
+    --board-bg: #fff;
+    --tool-bg: #111827;
+    --tool-fg: #ffffff;
+  }
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+  .app {
+    height:100vh; display:flex; flex-direction:column;
+  }
+  .toolbar {
+    display:flex; gap:8px; align-items:center; padding:10px;background:var(--tool-bg); color:var(--tool-fg);
+    box-shadow:0 1px 3px rgba(0,0,0,0.12);
+  }
+  .toolbar button, .toolbar input[type=file], .toolbar select {
+    background:#fff;color:#111;border:0;padding:8px 10px;border-radius:8px;cursor:pointer;
+  }
+  .toolbar .spacer{flex:1}
+  #wrap {
+    flex:1; display:flex; background:var(--bg); padding:12px; overflow:hidden;
+  }
+  .viewport {
+    flex:1; background:var(--board-bg); border-radius:10px; position:relative; overflow:auto;
+    box-shadow:0 6px 20px rgba(2,6,23,0.08); padding:40px;
+  }
+  .note {
+    width:200px; min-width:80px; min-height:80px;
+    position:absolute; box-shadow:0 2px 8px rgba(2,6,23,0.12);
+    border-radius:8px; padding:8px; box-sizing:border-box;
+    display:flex; flex-direction:column; resize:both; overflow:auto;
+    touch-action:none;
+  }
+  .note .head {
+    display:flex; gap:6px; align-items:center; cursor:grab;
+    font-size:12px; margin-bottom:6px;
+  }
+  .note .title {
+    font-weight:600; font-size:13px; flex:1; user-select:none;
+  }
+  .note .controls button {
+    background:transparent;border:0;cursor:pointer;font-size:14px;padding:4px;
+  }
+  .note .content {
+    flex:1; outline:none; font-size:14px;
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+  .note[data-color="yellow"]{ background:#fff9b1; }
+  .note[data-color="pink"]{ background:#ffdbe6; }
+  .note[data-color="green"]{ background:#d7ffd6; }
+  .note[data-color="blue"]{ background:#d8f0ff; }
+  /* tiny handle for resize */
+  .resize-handle{ position:absolute; right:6px; bottom:6px; width:12px; height:12px; opacity:0.4; }
+  /*text box and tables*/
+  /* The wrapper: draggable container */
+  .textbox-wrapper {
+    position: absolute;
+    overflow: visible;   /* allows header to float */
+    z-index: 5;
+  }
+
+  /* Header floating above the box */
+  .textbox-wrapper .tb-head {
+    position: absolute;
+    top: -24px;   /* float above box */
+    right: 0;
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: move;
+    user-select: none;
+  }
+
+  .textbox-wrapper:hover .tb-head,
+  .textbox-wrapper .tb-head:hover {
+    opacity: 1;
+  }
+
+  /* Native-resizable box */
+  .textbox {
+    background: #fff;
+    border: 1px solid #999;
+    border-radius: 6px;
+    padding: 6px;
+    box-sizing: border-box;
+
+    resize: both;   /* native resize handle */
+    overflow: auto; /* required for resize handle to appear */
+    min-width: 80px;
+    min-height: 40px;
+  }
+
+  /* Content area */
+  .textbox .inner {
+    width: 100%;
+    height: 100%;
+    outline: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 14px;
+  }
+
+  /* Delete button */
+  .btn-delete {
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 2px 6px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  
+  .btn-move {
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #eee;
+    cursor: grab;         /* OPEN hand */
+    user-select: none;
+  }
+
+  .btn-move:active {
+    cursor: grabbing;     /* CLOSED hand */
+  }
+
+  /* The wrapper: draggable container */
+  .tab-wrapper {
+    position: absolute;
+    overflow: visible;   /* allows header to float */
+    z-index: 5;
+  }
+
+  /* Header floating above the box */
+  .tab-wrapper .tab-head {
+    position: absolute;
+    top: -24px;   /* float above box */
+    right: 0;
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: move;
+    user-select: none;
+  }
+  
+  /* Header floating above the box */
+  .tab-wrapper .tab-tail {
+    position: absolute;
+    bottom: -24px;   /* float below box */
+    right: 0;
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: move;
+    user-select: none;
+  }
+
+  .tab-wrapper:hover .tab-head,
+  .tab-wrapper .tab-head:hover {
+    opacity: 1;
+  }
+  
+  .tab-wrapper:hover .tab-tail,
+  .tab-wrapper .tab-tail:hover {
+    opacity: 1;
+  }
+
+  .tableframe {
+    position: absolute;
+    border: 2px solid #333;
+    background: #fafafa;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .tableframe .grid {
+    display: grid;
+  }
+
+  .tableframe .cell {
+    border: 1px solid #bbb;
+    background: white;
+    box-sizing: border-box;
+  }
+
+  /* RESIZE HANDLE LAYERS */
+  .col-handles,
+  .row-handles {
+    position: absolute;
+    pointer-events: none;  /* IMPORTANT */
+  }
+
+  .col-handles {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .row-handles {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  /* actual handles */
+.col-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    transform: translateX(-3px); /* Centers the 6px handle */
+    cursor: col-resize;
+    pointer-events: auto; /* Makes this specific element clickable */
+  }
+
+  .row-handle {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 6px;
+    transform: translateY(-3px); /* Centers the 6px handle */
+    cursor: row-resize;
+    pointer-events: auto; /* Makes this specific element clickable */
+  }
+  /* Helpful hints */
+  .hint { font-size:13px; color:#374151; opacity:0.8; margin-left:8px; }
+  input[type="color"]{ padding:4px; border-radius:6px; border:0; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="toolbar">
+    <button id="addNote">➕ Aggiungi nota</button>
+    <label for="colorSelect" style="display:flex;align-items:center;gap:6px;">
+      Colore
+      <select id="colorSelect">
+        <option value="yellow">Giallo</option>
+        <option value="pink">Rosa</option>
+        <option value="green">Verde</option>
+        <option value="blue">Azzurro</option>
+      </select>
+    </label>
+    <button id="clearBoard">🧹 Pulisci tutto</button>
+    <div class="spacer"></div>
+    <input type="file" id="loadFile" accept="application/json" style="display:none;">
+    <button id="saveBtn">💾 Salva (.json)</button>
+    <button id="loadBtn">📂 Carica (.json)</button>
+    <button id="exportPNG">📷 Esporta PNG</button>
+    <button id="addTextbox">📝 Casella di testo</button>
+    <button id="addTable">📐 Tabella vuota</button>
+    <span class="hint">Trascina le note, ridimensionali dagli angoli, doppio clic per editare testo.</span>
+  </div>
+
+  <div id="wrap">
+    <div id="board" class="viewport" tabindex="0">
+      <!-- note elements go here -->
+    </div>
+  </div>
+</div>
+
+<!-- html2canvas per esportare immagine -->
+<script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<script>
+(() => {
+  const board = document.getElementById('board');
+  const addNoteBtn = document.getElementById('addNote');
+  const saveBtn = document.getElementById('saveBtn');
+  const loadBtn = document.getElementById('loadBtn');
+  const loadFile = document.getElementById('loadFile');
+  const exportPNG = document.getElementById('exportPNG');
+  const clearBoard = document.getElementById('clearBoard');
+  const colorSelect = document.getElementById('colorSelect');
+
+  let zCounter = 1;
+
+  function uid() {
+    return 'n' + Math.random().toString(36).slice(2,9);
+  }
+
+  function createNote({id, x=20, y=20, w=200, h=140, color='yellow', text='Nuova nota'}) {
+    const el = document.createElement('div');
+    el.className = 'note';
+    el.setAttribute('data-id', id || uid());
+    el.setAttribute('data-color', color);
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.width = (w || 200) + 'px';
+    el.style.height = (h || 140) + 'px';
+    el.style.zIndex = ++zCounter;
+
+    el.innerHTML = `
+      <div class="head" title="Trascina">
+        <div class="title"></div>
+        <div class="controls">
+          <button class="btn-color" title="Cambia colore">🎨</button>
+          <button class="btn-delete" title="Elimina">✖</button>
+        </div>
+      </div>
+      <div class="content" contenteditable="true"></div>
+      <div class="resize-handle"></div>
+    `;
+
+    const content = el.querySelector('.content');
+    content.textContent = text;
+    
+    const head = el.querySelector('.head');
+    const deleteButton = head.querySelector(".btn-delete");
+    const colorButton = head.querySelector('.btn-color');
+
+    //Stop the pointerdown event from bubbling up to the 'head' element's drag handler
+    deleteButton.addEventListener("pointerdown", (e) => {
+        e.stopPropagation(); 
+    });
+    colorButton.addEventListener("pointerdown", (e) => {
+        e.stopPropagation(); 
+    });
+    
+    // Delete
+    deleteButton.addEventListener("click", () => {
+        el.remove();
+    });
+    
+    // change color via colorSelect value
+    const COLOR_CYCLE = ['yellow', 'pink', 'green', 'blue'];
+    colorButton.addEventListener('click', ()=> {
+      const currentColor = el.dataset.color || COLOR_CYCLE[0];
+      const currentIndex = COLOR_CYCLE.indexOf(currentColor);
+      const nextIndex = (currentIndex + 1) % COLOR_CYCLE.length;
+      const nextColor = COLOR_CYCLE[nextIndex];
+      el.dataset.color = nextColor;
+    });
+
+    // Dragging
+    head.addEventListener('pointerdown', startDrag);
+    head.addEventListener('dblclick', () => content.focus());
+
+    // prevent board drag while editing
+    content.addEventListener('pointerdown', (e)=> e.stopPropagation());
+
+    // bring to front on mousedown
+    el.addEventListener('pointerdown', ()=> el.style.zIndex = ++zCounter);
+
+    // touch / pointer drag implementation
+    function startDrag(e){
+      e.preventDefault();
+      e.stopPropagation();
+      el.setPointerCapture(e.pointerId);
+
+      const offsetX = e.clientX - parseInt(el.style.left);
+      const offsetY = e.clientY - parseInt(el.style.top);
+
+      function onMove(ev){
+        el.style.left = (ev.clientX - offsetX) + "px";
+        el.style.top  = (ev.clientY - offsetY) + "px";
+      }
+      function onUp(ev){
+        el.releasePointerCapture(e.pointerId);
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+      }
+
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    }
+
+    // make keyboard deletable
+    el.addEventListener('keydown', (ev)=>{
+      if(ev.key === 'Delete') el.remove();
+    });
+
+    board.appendChild(el);
+    // makeDraggable(el);
+    return el;
+  }
+  
+  function createTextbox({id, x=50, y=50, w=200, h=100, text="", font_size=14}) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "textbox-wrapper";
+    wrapper.dataset.id = id || uid();
+    wrapper.style.left = x + "px";
+    wrapper.style.top = y + "px";
+    wrapper.style.zIndex = 5;
+
+    const head = document.createElement("div");
+    head.className = "tb-head";
+    head.innerHTML = `
+      <div class="btn-move">⛶</div>
+      <button class="btn-font-dec">A−</button>
+      <button class="btn-font-inc">A+</button>
+      <button class="btn-delete">✖</button>
+      `;
+
+    const box = document.createElement("div");
+    box.className = "textbox";
+    box.style.width = w + "px";
+    box.style.height = h + "px";
+
+    const inner = document.createElement("div");
+    inner.className = "inner";
+    inner.contentEditable = "true";
+    inner.textContent = text;
+    inner.style.fontSize = font_size + "px";
+
+    box.appendChild(inner);
+    wrapper.appendChild(head);
+    wrapper.appendChild(box);
+    
+    const btnDec = head.querySelector(".btn-font-dec");
+    const btnInc = head.querySelector(".btn-font-inc");
+
+    // avoid interfering with drag
+    btnDec.addEventListener("pointerdown", e => e.stopPropagation());
+    btnInc.addEventListener("pointerdown", e => e.stopPropagation());
+
+    btnDec.addEventListener("click", () => changeFontSize(inner, -4));
+    btnInc.addEventListener("click", () => changeFontSize(inner, +4));
+    
+    function changeFontSize(el, delta) {
+      const style = window.getComputedStyle(el);
+      const size = parseFloat(style.fontSize);
+      const newSize = Math.max(8, Math.min(200, size + delta));
+      el.style.fontSize = newSize + "px";
+    }
+    
+    const deleteButton = head.querySelector(".btn-delete");
+    //Stop the pointerdown event from bubbling up to the 'head' element's drag handler
+    deleteButton.addEventListener("pointerdown", (e) => {
+        e.stopPropagation(); 
+    });
+    // Original click handler
+    deleteButton.addEventListener("click", () => {
+        wrapper.remove();
+    });
+
+    // --- Dragging the wrapper via the header ---
+    head.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      wrapper.setPointerCapture(e.pointerId);
+
+      const offsetX = e.clientX - parseInt(wrapper.style.left);
+      const offsetY = e.clientY - parseInt(wrapper.style.top);
+
+      function onMove(ev) {
+        wrapper.style.left = (ev.clientX - offsetX) + "px";
+        wrapper.style.top  = (ev.clientY - offsetY) + "px";
+      }
+
+      function onUp(ev) {
+        wrapper.releasePointerCapture(e.pointerId);
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", onUp);
+      }
+
+      window.addEventListener("pointermove", onMove);
+      window.addEventListener("pointerup", onUp);
+    });
+
+    // Delete via key
+    wrapper.addEventListener("keydown", (ev) => {
+      if (ev.key === "Delete") wrapper.remove();
+    });
+
+    board.appendChild(wrapper);
+    return wrapper;
+  }
+
+  function createTableFrame({id, x=80, y=80, w=300, h=200, rows=3, cols=3, columnSizes, rowHeights}) {
+
+    const el = document.createElement("div");
+    el.className = "tableframe";
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    el.style.width = w + "px";
+    el.style.height = h + "px";
+    
+    // Account for frame border (2px on each side)
+    const frameBorderWidth = 4;
+    
+    // === START MODIFICATION BLOCK ===
+    
+    let colSizes, rowSizes;
+    let newContentWidth, newContentHeight;
+
+    if (columnSizes && Array.isArray(columnSizes)) {
+        // Use input sizes directly
+        colSizes = columnSizes;
+        // Recalculate content width from the sum of input sizes
+        newContentWidth = colSizes.reduce((sum, size) => sum + size, 0);
+        // Update total columns count
+        cols = colSizes.length;
+    } else {
+        // Fallback to original behavior (equal distribution)
+        const contentWidth = w - frameBorderWidth;
+        const initialColWidth = contentWidth / cols;
+        colSizes = Array(cols).fill(initialColWidth);
+        newContentWidth = contentWidth;
+    }
+
+    if (rowHeights && Array.isArray(rowHeights)) {
+        // Use input sizes directly
+        rowSizes = rowHeights;
+        // Recalculate content height from the sum of input sizes
+        newContentHeight = rowSizes.reduce((sum, size) => sum + size, 0);
+        // Update total rows count
+        rows = rowSizes.length;
+    } else {
+        // Fallback to original behavior (equal distribution)
+        const contentHeight = h - frameBorderWidth;
+        const initialRowHeight = contentHeight / rows;
+        rowSizes = Array(rows).fill(initialRowHeight);
+        newContentHeight = contentHeight;
+    }
+    
+    // Set the overall wrapper size (Content Width + Border)
+    el.style.width = (newContentWidth + frameBorderWidth) + "px";
+    el.style.height = (newContentHeight + frameBorderWidth) + "px";
+
+    // === END MODIFICATION BLOCK ===
+
+    // GRID
+    const grid = document.createElement("div");
+    grid.className = "grid";
+
+    // Use the newly defined colSizes/rowSizes arrays
+    grid.style.gridTemplateColumns = colSizes.map(v => v + "px").join(" ");
+    grid.style.gridTemplateRows = rowSizes.map(v => v + "px").join(" ");
+
+    // CREATE CELLS (Use the updated 'rows' and 'cols' counts)
+    for (let i = 0; i < rows * cols; i++) {
+        // ... (rest of cell creation remains the same)
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        grid.appendChild(cell);
+    }
+
+    // HANDLE LAYERS
+    const colLayer = document.createElement("div");
+    colLayer.className = "col-handles";
+    const rowLayer = document.createElement("div");
+    rowLayer.className = "row-handles";
+
+    el.appendChild(grid);
+    el.appendChild(colLayer);
+    el.appendChild(rowLayer);
+    
+    if (board) {
+      board.appendChild(el);
+    } else {
+      console.error("The 'board' element was not found!");
+      return;
+    }
+
+    // === HANDLE POSITIONING FUNCTIONS ===
+    
+    function positionColHandles() {
+      let xPos = 0;
+      colLayer.innerHTML = "";
+      
+      // *** FIX: Loop up to colSizes.length (N handles for N columns) ***
+      for (let i = 0; i < colSizes.length; i++) {
+        xPos += colSizes[i];
+        
+        // If it's the last handle, it should be the total width. 
+        // We don't need a handle before the first column (i=0 is the first divider)
+        if (i > -1) { 
+            const h = document.createElement("div");
+            h.className = "col-handle";
+            h.style.left = xPos + "px";
+            h.dataset.col = i; // This handle resizes column 'i'
+            colLayer.appendChild(h);
+        }
+      }
+    }
+
+    function positionRowHandles() {
+      let yPos = 0;
+      rowLayer.innerHTML = "";
+      
+      // *** FIX: Loop up to rowSizes.length (N handles for N rows) ***
+      for (let i = 0; i < rowSizes.length; i++) {
+        yPos += rowSizes[i];
+        
+        if (i > -1) {
+            const h = document.createElement("div");
+            h.className = "row-handle";
+            h.style.top = yPos + "px";
+            h.dataset.row = i; // This handle resizes row 'i'
+            rowLayer.appendChild(h);
+        }
+      }
+    }
+
+    // === RESIZING LOGIC ===
+
+    //
+    // COLUMN RESIZING
+    //
+    colLayer.addEventListener("pointerdown", e => {
+      if (!e.target.classList.contains("col-handle")) return;
+
+      e.preventDefault();
+      const col = parseInt(e.target.dataset.col, 10);
+      const startX = e.clientX;
+      const initialWidth = colSizes[col];
+      
+      function move(ev) {
+        const delta = ev.clientX - startX;
+        
+        // Update the *live* array of column sizes
+        colSizes[col] = Math.max(20, initialWidth + delta);
+        
+        // Update the grid style
+        grid.style.gridTemplateColumns = colSizes.map(v => v + "px").join(" ");
+        
+        // Update wrapper width
+        const newTotalContentWidth = colSizes.reduce((a, b) => a + b, 0);
+        el.style.width = (newTotalContentWidth + frameBorderWidth) + "px";
+        
+        // Reposition handles
+        positionColHandles();
+      }
+
+      function up() {
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+      }
+
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+    });
+
+    //
+    // ROW RESIZING
+    //
+    rowLayer.addEventListener("pointerdown", e => {
+      if (!e.target.classList.contains("row-handle")) return;
+
+      e.preventDefault();
+      const row = parseInt(e.target.dataset.row, 10);
+      const startY = e.clientY;
+      const initialHeight = rowSizes[row];
+
+      function move(ev) {
+        const delta = ev.clientY - startY;
+        
+        // Update the *live* array of row sizes
+        rowSizes[row] = Math.max(20, initialHeight + delta);
+        
+        // Update the grid style
+        grid.style.gridTemplateRows = rowSizes.map(v => v + "px").join(" ");
+        
+        // Update wrapper height
+        const newTotalContentHeight = rowSizes.reduce((a, b) => a + b, 0);
+        el.style.height = (newTotalContentHeight + frameBorderWidth) + "px";
+        
+        // Reposition handles
+        positionRowHandles();
+      }
+
+      function up() {
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+      }
+
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+    });
+
+    // Initial call to create handles
+    positionColHandles();
+    positionRowHandles();
+
+    return el;
+  }
+
+  function createTableBox(opts) {
+    const { id, x=80, y=80, w=300, h=200, rows=3, cols=3, columnSizes, rowHeights} = opts;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "tab-wrapper";        // same as textboxes
+    wrapper.dataset.id = id || uid();
+    wrapper.style.left = x + "px";
+    wrapper.style.top  = y + "px";
+    wrapper.style.zIndex = 3;
+
+    // --- HEADER (same as textboxes) ---
+    const head = document.createElement("div");
+    head.className = "tab-head";
+    head.innerHTML = `
+      <div class="btn-move">⛶</div>
+      <button class="btn-delete">✖</button>
+    `;
+    const tail = document.createElement("div");
+    tail.className = "tab-tail";
+    tail.innerHTML = `
+      <div class="btn-move">⛶</div>
+      <button class="btn-delete">✖</button>
+    `;
+    
+    head.querySelector(".btn-delete").addEventListener("pointerdown", e => e.stopPropagation());
+    tail.querySelector(".btn-delete").addEventListener("pointerdown", e => e.stopPropagation());
+
+    // DRAG wrapper via header
+    head.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      // wrapper.setPointerCapture(e.pointerId);
+
+      const offX = e.clientX - parseInt(wrapper.style.left);
+      const offY = e.clientY - parseInt(wrapper.style.top);
+
+      function move(ev) {
+        wrapper.style.left = (ev.clientX - offX) + "px";
+        wrapper.style.top  = (ev.clientY - offY) + "px";
+      }
+      function up(ev) {
+        // wrapper.releasePointerCapture(e.pointerId);
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+      }
+
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+    });
+
+    head.querySelector(".btn-delete").addEventListener("click", () => wrapper.remove());
+    
+    // DRAG wrapper via header
+    tail.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      // wrapper.setPointerCapture(e.pointerId);
+
+      const offX = e.clientX - parseInt(wrapper.style.left);
+      const offY = e.clientY - parseInt(wrapper.style.top);
+
+      function move(ev) {
+        wrapper.style.left = (ev.clientX - offX) + "px";
+        wrapper.style.top  = (ev.clientY - offY) + "px";
+      }
+      function up(ev) {
+        // wrapper.releasePointerCapture(e.pointerId);
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+      }
+
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+    });
+
+    tail.querySelector(".btn-delete").addEventListener("click", () => wrapper.remove());
+
+    // INSERT ACTUAL TABLE
+    const table = createTableFrame({ id, x:0, y:0, w, h, rows, cols, columnSizes, rowHeights});
+    table.style.position = "relative"; // important when inside wrapper
+    table.style.left = "0";
+    table.style.top = "0";
+
+    wrapper.appendChild(head);
+    wrapper.appendChild(table);
+    wrapper.appendChild(tail);
+    board.appendChild(wrapper);
+
+    return wrapper;
+  }
+
+
+
+
+  // rende draggable testo e tabelle
+  function makeDraggable(el) {
+    el.addEventListener("pointerdown", start);
+
+    function start(e) {
+      // Se il target è una maniglia di resize o un contenteditable, NON drag
+      if(e.target.classList.contains("resize-handle") ||
+         e.target.classList.contains("col-resize-handle") ||
+         e.target.classList.contains("row-resize-handle") ||
+         e.target.closest(".inner")) return;
+
+      e.preventDefault();
+      el.setPointerCapture(e.pointerId);
+
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const origX = parseInt(el.style.left);
+      const origY = parseInt(el.style.top);
+
+      function move(ev){
+        el.style.left = origX + (ev.clientX - startX) + "px";
+        el.style.top = origY + (ev.clientY - startY) + "px";
+      }
+      function stop(ev){
+        el.releasePointerCapture(e.pointerId);
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", stop);
+      }
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", stop);
+    }
+  }
+
+  addNoteBtn.addEventListener('click', ()=> {
+    const color = colorSelect.value || 'yellow';
+    // put near top-left + offset
+    const el = createNote({ x: 40 + Math.random()*40, y: 40 + Math.random()*40, color });
+    // focus content
+    setTimeout(()=> el.querySelector('.content').focus(), 40);
+  });
+  
+  document.getElementById("addTextbox").addEventListener("click", () => {
+    createTextbox({});
+  });
+
+  document.getElementById("addTable").addEventListener("click", () => {
+    const r = parseInt(prompt("Numero righe?", "3"));
+    const c = parseInt(prompt("Numero colonne?", "3"));
+    if(r > 0 && c > 0) createTableBox({rows:r, cols:c});
+  });
+
+  // Save board to JSON
+  saveBtn.addEventListener('click', ()=> {
+    const notes = Array.from(board.querySelectorAll('.note')).map(n => {
+      return {
+        id: n.dataset.id,
+        x: parseInt(n.style.left || 0,10),
+        y: parseInt(n.style.top || 0,10),
+        w: parseInt(n.style.width || 200,10),
+        h: parseInt(n.style.height || 140,10),
+        color: n.dataset.color,
+        text: n.querySelector('.content').textContent
+      };
+    });
+    const textboxes = Array.from(board.querySelectorAll('.textbox-wrapper')).map(b => {
+      return {
+        id: b.dataset.id,
+        x: parseInt(b.style.left || 0,10),
+        y: parseInt(b.style.top || 0,10),
+        w: parseInt(b.querySelector('.textbox').style.width || 200,10),
+        h: parseInt(b.querySelector('.textbox').style.height || 100,10),
+        text: b.querySelector('.inner').textContent,
+        font_size: parseInt(b.querySelector('.inner').style.fontSize || 10,10) 
+      };
+    });
+    const tables = Array.from(board.querySelectorAll('.tab-wrapper')).map(t => {
+      const grid = t.querySelector('.grid'); 
+      
+      // 2. Access the computed styles from the grid element
+      // This gives us a string like "100px 50px 150px"
+      const colTemplate = grid.style.gridTemplateColumns;
+      const rowTemplate = grid.style.gridTemplateRows;
+
+      // 3. Parse the strings into arrays of numbers (in pixels)
+      const columnSizes = colTemplate.split(' ')
+        .map(v => parseFloat(v));
+      const rowHeights = rowTemplate.split(' ')
+        .map(v => parseFloat(v));
+      return {
+        id: t.dataset.id,
+        x: parseInt(t.style.left || 0,10),
+        y: parseInt(t.style.top || 0,10),
+        // w: parseInt(t.style.width || 300,10),
+        // h: parseInt(t.style.height || 200,10),
+        // rows: parseInt(t.querySelector('.tableframe').dataset.rows,10),
+        // cols: parseInt(t.querySelector('.tableframe').dataset.cols,10),
+        columnSizes: columnSizes, 
+        rowHeights: rowHeights      
+      };
+    });
+    const state = {
+      createdAt: new Date().toISOString(),
+      notes,
+      textboxes,
+      tables
+    };
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'lavagna.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  // Load JSON
+  loadBtn.addEventListener('click', ()=> loadFile.click());
+  loadFile.addEventListener('change', async (ev)=>{
+    const f = ev.target.files[0];
+    if(!f) return;
+    try {
+      const text = await f.text();
+      const obj = JSON.parse(text);
+      loadFromState(obj);
+    } catch(err){
+      alert('Errore nel caricamento: file non valido');
+      console.error(err);
+    } finally {
+      loadFile.value = '';
+    }
+  });
+
+  function loadFromState(state){
+    if(!state || !Array.isArray(state.notes)) {
+      alert('Formato JSON non riconosciuto');
+      return;
+    }
+    // clear current
+    board.querySelectorAll('.note').forEach(n=>n.remove());
+    board.querySelectorAll('.textbox-wrapper').forEach(n=>n.remove());
+    board.querySelectorAll('.tab-wrapper').forEach(n=>n.remove());
+    // create notes
+    if(state.notes){
+      for(const n of state.notes){
+        createNote(n);
+      }
+    }
+    // create textboxes
+    if(state.textboxes){
+      for(const t of state.textboxes){
+        createTextbox(t);
+      }
+    }
+    // create tables
+    if(state.tables){
+      for(const tb of state.tables){
+        createTableBox(tb);
+      }
+    }
+  }
+
+  // Clear board
+  clearBoard.addEventListener('click', ()=>{
+    if(!confirm('Sei sicuro di cancellare tutte le note?')) return;
+    board.querySelectorAll('.note').forEach(n => n.remove());
+    board.querySelectorAll('.tab-wrapper').forEach(n => n.remove());
+    board.querySelectorAll('.textbox-wrapper').forEach(n => n.remove());
+  });
+
+  // Export PNG (uses html2canvas)
+  exportPNG.addEventListener('click', async ()=>{
+    // Temporarily remove outlines and hide controls
+    const notes = board.querySelectorAll('.note');
+    notes.forEach(n => n.style.outline = 'none');
+    // put board at natural size for capture (use current scroll + padding)
+    const oldScroll = { left: board.scrollLeft, top: board.scrollTop };
+    // scroll to 0 to capture whole visible area; to capture full extent we'd compute bounding boxes
+    board.scrollLeft = 0; board.scrollTop = 0;
+
+    // compute full bounding of notes to capture full content
+    let maxRight = 0, maxBottom = 0, minLeft = Infinity, minTop = Infinity;
+    const pad = 20;
+    if(notes.length){
+      notes.forEach(n=>{
+        const x = parseInt(n.style.left || 0,10);
+        const y = parseInt(n.style.top || 0,10);
+        const w = parseInt(n.style.width || n.getBoundingClientRect().width,10);
+        const h = parseInt(n.style.height || n.getBoundingClientRect().height,10);
+        minLeft = Math.min(minLeft, x);
+        minTop = Math.min(minTop, y);
+        maxRight = Math.max(maxRight, x + w);
+        maxBottom = Math.max(maxBottom, y + h);
+      });
+    } else {
+      // nothing: capture viewport area
+      minLeft = 0; minTop = 0; maxRight = board.clientWidth; maxBottom = board.clientHeight;
+    }
+    // create a temporary wrapper clone sized to bounding box
+    const captureW = Math.max(board.clientWidth, maxRight + pad);
+    const captureH = Math.max(board.clientHeight, maxBottom + pad);
+
+    // clone board into a detached element to avoid scrollbars & UI
+    const clone = board.cloneNode(true);
+    clone.style.width = captureW + 'px';
+    clone.style.height = captureH + 'px';
+    clone.style.overflow = 'visible';
+    clone.style.padding = window.getComputedStyle(board).padding;
+    // hide control buttons inside notes for cleaner export
+    clone.querySelectorAll('.controls').forEach(c => c.style.display = 'none');
+
+    // insert clone offscreen
+    clone.style.position = 'fixed';
+    clone.style.left = '-9999px';
+    clone.style.top = '-9999px';
+    document.body.appendChild(clone);
+
+    try {
+      const canvas = await html2canvas(clone, {scale:2, backgroundColor: null});
+      const data = canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = data; a.download = 'lavagna.png';
+      document.body.appendChild(a); a.click(); a.remove();
+    } catch(err){
+      alert('Errore durante esportazione immagine');
+      console.error(err);
+    } finally {
+      document.body.removeChild(clone);
+      board.scrollLeft = oldScroll.left; board.scrollTop = oldScroll.top;
+    }
+  });
+
+  // Keyboard: Ctrl+S save
+  window.addEventListener('keydown', (e)=>{
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's'){
+      e.preventDefault();
+      saveBtn.click();
+    }
+  });
+
+  // On first load, create a couple demo notes
+  createNote({ x:40, y:30, color:'yellow', text:'Esempio: lista attività\n- Task A\n- Task B' });
+  createNote({ x:280, y:60, color:'pink', text:'Idea / note rapide' });
+
+// ----------------------------
+// AUTOSAVE IN LOCALSTORAGE
+// ----------------------------
+function saveToLocalStorage() {
+  const notes = Array.from(board.querySelectorAll('.note')).map(n => {
+    return {
+      id: n.dataset.id,
+      x: parseInt(n.style.left || 0,10),
+      y: parseInt(n.style.top || 0,10),
+      w: parseInt(n.style.width || 200,10),
+      h: parseInt(n.style.height || 140,10),
+      color: n.dataset.color,
+      text: n.querySelector('.content').textContent
+    };
+  });
+  const textboxes = Array.from(board.querySelectorAll('.textbox-wrapper')).map(b => {
+    return {
+      id: b.dataset.id,
+      x: parseInt(b.style.left || 0,10),
+      y: parseInt(b.style.top || 0,10),
+      w: parseInt(b.querySelector('.textbox').style.width || 200,10),
+      h: parseInt(b.querySelector('.textbox').style.height || 100,10),
+      text: b.querySelector('.inner').textContent,
+      font_size: parseInt(b.querySelector('.inner').style.fontSize || 10,10) 
+    };
+  });
+  const tables = Array.from(board.querySelectorAll('.tab-wrapper')).map(t => {
+    const grid = t.querySelector('.grid'); 
+    
+    // 2. Access the computed styles from the grid element
+    // This gives us a string like "100px 50px 150px"
+    const colTemplate = grid.style.gridTemplateColumns;
+    const rowTemplate = grid.style.gridTemplateRows;
+
+    // 3. Parse the strings into arrays of numbers (in pixels)
+    const columnSizes = colTemplate.split(' ')
+      .map(v => parseFloat(v));
+    const rowHeights = rowTemplate.split(' ')
+      .map(v => parseFloat(v));
+    return {
+      id: t.dataset.id,
+      x: parseInt(t.style.left || 0,10),
+      y: parseInt(t.style.top || 0,10),
+      // w: parseInt(t.style.width || 300,10),
+      // h: parseInt(t.style.height || 200,10),
+      // rows: parseInt(t.querySelector('.tableframe').dataset.rows,10),
+      // cols: parseInt(t.querySelector('.tableframe').dataset.cols,10),
+      columnSizes: columnSizes, 
+      rowHeights: rowHeights      
+    };
+  });
+
+  const state = {notes, textboxes, tables};
+  localStorage.setItem("lavagna_autosave", JSON.stringify(state));
+}
+
+function loadFromLocalStorage() {
+  const data = localStorage.getItem("lavagna_autosave");
+  if(!data) return;
+  try {
+    const st = JSON.parse(data);
+    loadFromState(st);
+  } catch(e) {
+    console.error("Errore caricando autosave:", e);
+  }
+}
+
+// autosave ogni 2 secondi
+setInterval(saveToLocalStorage, 2000);
+
+// carica in automatico se esiste
+loadFromLocalStorage();
+
+})();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
