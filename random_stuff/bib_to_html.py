@@ -1,7 +1,7 @@
 #!/usr/bin/env -S custom_python_launcher science
 
 ###########################################################################################
-# Custom Python script to convert a .bib (BibTex) file to an HTML list.
+# Custom Python script to convert a .bib (BibTex) file to a nice HTML list.
 # For each BibTex entry, the output list item is formatted in two rows:
 #
 #   Author_1, Author_2 & Author_3 (Year).
@@ -10,13 +10,15 @@
 # How it works:
 #   -   If you want to display your own note after the title, you must write it in the
 #       "note" field enclosed by parentheses ( e.g., note = {(Short note)} )
-#   -   Url to the paper must be saved in field "url", clearly
+#   -   Url to the paper must be saved in the field "url", clearly
 #   -   If you want to display additional links right after the title, you can add fields
 #       named "url_2", "url_3", ... containing the urls, up to a total of 30. You can set
 #       the link text by using the optional fields "url_note_2", "url_note_3", ...,
 #       otherwise the links are displayed with a default text.
-#       Note: these fields are not BibTex fields, but you can add them to the entries as
-#       they were. They don't affect how the .bib file is processed by Latex.
+#       Note: these additional fields are not BibTex fields, but you can add them to
+#       the entries normally. They don't affect how the .bib file is processed by Latex.
+#
+# Please set the variables SCRIPT_DIR, INPUT_BIB, and OUTPUT_HTML below.
 ###########################################################################################
 
 import bibtexparser
@@ -77,7 +79,7 @@ def format_bibtex_entry(entry):
     # We only display the note if it's enclosed by parentheses in the 'note' field
     custom_note = ""
     if entry.get('note', '').startswith('(') and entry.get('note', '').endswith(')'):
-        # We extract the note without parentheses (although I will put them back later cause I like them)
+        # We extract the note without parentheses (I will put them back later cause I like them, but this will allow easier script customization)
         custom_note = entry['note'].strip()
     
     # Journal/Booktitle/Proceedings
@@ -197,9 +199,9 @@ def convert_bib_to_html(input_file, output_file):
 # --- Execution ---
 if __name__ == "__main__":
     # File names
-    SCRIPT_DIR = "/home/lorenzo/Desktop/Bibtex files/"
-    INPUT_BIB = SCRIPT_DIR +'biblio.bib'
-    OUTPUT_HTML = SCRIPT_DIR + 'elenco_citazioni.html'
+    SCRIPT_DIR = ""
+    INPUT_BIB = SCRIPT_DIR +'bibliography.bib'
+    OUTPUT_HTML = SCRIPT_DIR + 'references.html'
     
     # Example of BibTex file
     example_bib_content = """
