@@ -90,7 +90,13 @@ async function generate(start, T, temperature) {
             document.getElementById("output").textContent = x.map(i => itos[i]).join("");
         }
     }
-    return x.map(i => itos[i]).join("");
+    let fullText = x.map(i => itos[i]).join("");
+    const lastDotIndex = fullText.lastIndexOf(".");
+    if (lastDotIndex !== -1) {
+        fullText = fullText.substring(0, lastDotIndex + 1);
+    }
+    document.getElementById("output").textContent = fullText;
+    return fullText;
 }
 
 // UI Setup

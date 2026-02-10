@@ -6,11 +6,23 @@
 
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.0/dist/ort.min.js"></script>
   <script src="script.js" defer></script>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style/style.css">
+  <style>
+    #temperature {
+        width: 100%;
+        margin: 10px 0;
+    }
+    pre {
+        background: #f0f0f0;
+        padding: 15px;
+        border-radius: 6px;
+        white-space: pre-wrap;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Yu-Gi-Oh! Effect Generator</h1>
+  <h2>Yu-Gi-Oh! Effect Generator</h2>
 
   <label>Prompt:</label>
   <textarea id="prompt" rows="3" cols="50">This card </textarea>
