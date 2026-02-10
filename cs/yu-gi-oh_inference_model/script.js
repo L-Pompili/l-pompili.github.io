@@ -43,8 +43,10 @@ async function init() {
 }
 
 async function generate(start, T, temperature) {
-    let x = Array.from(start).map(c => stoi[c] ?? stoi[" "]);
-    x.push(0);
+    let x = [
+        stoi["\n"],
+        Array.from(start).map(c => stoi[c] ?? stoi[" "])
+    ];
     for (let step = 0; step < T; step++) {
         let x_cond = x.slice(-block_size);
 
@@ -82,7 +84,7 @@ async function generate(start, T, temperature) {
             document.getElementById("output").textContent = x.map(i => itos[i]).join("");
         }
     }
-    let fullText = x.map(i => itos[i]).join("");
+    let fullText = x.slice(1).map(i => itos[i]).join("");
     const lastDotIndex = fullText.lastIndexOf(".");
     if (lastDotIndex !== -1) {
         fullText = fullText.substring(0, lastDotIndex + 1);
