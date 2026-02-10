@@ -45,7 +45,7 @@ async function init() {
 async function generate(start, T, temperature) {
     let x = [
         stoi["\n"],
-        Array.from(start).map(c => stoi[c] ?? stoi[" "])
+        ...Array.from(start).map(c => stoi[c] ?? stoi[" "])
     ];
     for (let step = 0; step < T; step++) {
         let x_cond = x.slice(-block_size);
@@ -81,7 +81,7 @@ async function generate(start, T, temperature) {
         
         if (step % 5 === 0) {
             await new Promise(r => setTimeout(r, 0));
-            document.getElementById("output").textContent = x.map(i => itos[i]).join("");
+            document.getElementById("output").textContent = x.slice(1).map(i => itos[i]).join("");
         }
     }
     let fullText = x.slice(1).map(i => itos[i]).join("");
