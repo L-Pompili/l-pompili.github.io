@@ -30,6 +30,7 @@ async function init() {
     await loadVocab();
 
     console.log("Loading ONNX model...");
+    document.getElementById("output").textContent = "Loading model... (this might take a few seconds)";
     try {
         // Load the model
         session = await ort.InferenceSession.create("./model_v3.onnx", {
