@@ -1,7 +1,6 @@
 let session;
 let stoi, itos, block_size, vocab_size;
 
-// Ensure we use the latest ONNX Runtime (matches your index.html)
 ort.env.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.0/dist/";
 
 async function loadVocab() {
@@ -12,7 +11,6 @@ async function loadVocab() {
         stoi = data.stoi;
         block_size = data.block_size;
         
-        // Handle vocab size safely
         const rawItos = data.itos;
         vocab_size = Object.keys(rawItos).length;
         
@@ -32,7 +30,6 @@ async function init() {
     console.log("Loading ONNX model...");
     document.getElementById("output").textContent = "Loading model... (this might take a few seconds)";
     try {
-        // Load the model
         session = await ort.InferenceSession.create("./model_v3.onnx", {
             executionProviders: ["wasm"], 
         });
@@ -46,25 +43,20 @@ async function init() {
 }
 
 async function generate(start, T, temperature) {
-    // Tokenize
     let x = Array.from(start).map(c => stoi[c] ?? stoi[" "]);
-
+    x.push(0);
     for (let step = 0; step < T; step++) {
-        // Dynamic Slice: We allow inputs shorter than block_size now!
         let x_cond = x.slice(-block_size);
 
-        // Create tensor with the ACTUAL shape of x_cond (e.g., [1, 5])
-        // This works now because the model is dynamic!
         const inputTensor = new ort.Tensor(
             "int64",
             BigInt64Array.from(x_cond.map(BigInt)),
-            [1, x_cond.length] 
+            [1, x_cond.length]
         );
 
         const out = await session.run({ "input": inputTensor });
         const logits = out["output"].data;
         
-        // Logic to sample from the last token
         const startIdx = (x_cond.length - 1) * vocab_size;
         const lastLogits = logits.slice(startIdx, startIdx + vocab_size);
 
@@ -85,7 +77,6 @@ async function generate(start, T, temperature) {
         }
         x.push(ix);
         
-        // Update UI every 5 tokens
         if (step % 5 === 0) {
             await new Promise(r => setTimeout(r, 0));
             document.getElementById("output").textContent = x.map(i => itos[i]).join("");
@@ -100,17 +91,14 @@ async function generate(start, T, temperature) {
     return fullText;
 }
 
-// UI Setup
 document.getElementById("generate").onclick = async () => {
     const prompt = document.getElementById("prompt").value;
     const temp = parseFloat(document.getElementById("temperature").value);
     document.getElementById("output").textContent = "Generating...";
     
-    // Slight delay to ensure UI renders "Generating..."
     setTimeout(() => generate(prompt, 200, temp), 50);
 };
 
-// Update temp slider label
 document.getElementById("temperature").oninput = (e) => {
     document.getElementById("tempValue").textContent = e.target.value;
 };

@@ -23,7 +23,9 @@
 
 <body>
   <h2>Yu-Gi-Oh! Effect Generator</h2>
-
+  <p>
+    This page implements a character-level tokenization transformer that has been trained on the dataset of a popular trading card game (Yu-gi-oh! TCG). You can find the model <a href="https://github.com/L-Pompili/lastshot">here</a>.<br>The trained model was exported in onnx, and is loaded and used in this page via onnxruntime-web. The model thus runs on your device.<br>The temperature parameter rescales the logits before the softmax operation to change the model variability (standard).
+  </p>
   <label>Prompt:</label>
   <textarea id="prompt" rows="3" cols="50">This card </textarea>
 
