@@ -4,6 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8" />
   <title>Yu-Gi-Oh! Effect Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.0/dist/ort.min.js"></script>
   <script src="script.js" defer></script>
@@ -23,9 +24,10 @@
 </head>
 
 <body>
-  <h2>Yu-Gi-Oh! Effect Generator</h2>
+  <h2>Yu-Gi-Oh! Effect Generator - Transformer</h2>
   <p>
-    This page implements a character-level tokenization transformer that has been trained on the dataset of a popular trading card game (Yu-gi-oh! TCG). You can find the model <a href="https://github.com/L-Pompili/lastshot">here</a>.<br>The trained model was exported in onnx, and is loaded and used in this page via onnxruntime-web. The model thus runs on your device.<br>The temperature parameter rescales the logits before the softmax operation to change the model variability (standard).
+    This page implements a character-level tokenization transformer that has been trained on the dataset of a popular trading card game (Yu-gi-oh! TCG). You can find the model <a href="https://github.com/L-Pompili/transformer-study" target="_blank" class="comp-link"><span class="link-wrap"><i class="fab fa-github github"></i></span><span>here</span>
+        </a>.<br>The trained model was exported in onnx, and is loaded and used in this page via onnxruntime-web. The model thus runs on your device.<br>The temperature parameter rescales the logits before the softmax operation to change the model variability (standard).
   </p>
   <label>Prompt:</label>
   <textarea id="prompt" rows="3" cols="50">This card </textarea>
