@@ -1,0 +1,48 @@
+baseURL = "https://l-pompili.github.io/"
+languageCode = 'en-us'
+title = 'Lorenzo Pompili - Personal website'
+publishDir = "docs"
+theme = "PaperMod"
+
+
+[menu]
+  [[menu.main]]
+  identifier = "onnx"
+  name = "ONNX Demo"
+  url = "/yu-gi-oh_inference_model/" # Assuming your folder in static/ is named onnx-demo
+  weight = 10
+
+  [[menu.main]]
+  identifier = "pyscript"
+  name = "PyScript Demo"
+  url = "/pyscript-demo/" # Update to match your folder name
+  weight = 20
+
+  [[menu.main]]
+  identifier = "blog"
+  name = "Blog"
+  url = "/blog/"
+  weight = 30
+
+
+  [params]
+  env = "production"
+  title = "Lorenzo Pompili"
+  description = "Data Science Portfolio & Blog"
+  author = "Lorenzo Pompili"
+
+[params.profileMode]
+  enabled = true
+  title = "Hi, I'm Lorenzo"
+  subtitle = "I am a Data Scientist. Here are some of my projects, demos, and thoughts."
+  imageUrl = "your-profile-pic.jpg" # Put an image in static/ and reference the name here
+  imageWidth = 150
+  imageHeight = 150
+  
+  # Let's add some quick links under your profile
+  [[params.profileMode.buttons]]
+    name = "View ONNX Demo"
+    url = "/yu-gi-oh_inference_model/"
+  [[params.profileMode.buttons]]
+    name = "Read the Blog"
+    url = "/blog/"
