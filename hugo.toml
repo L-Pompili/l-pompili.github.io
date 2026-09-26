@@ -1,0 +1,68 @@
+baseURL = "https://l-pompili.github.io/"
+locale = 'en-us'
+title = 'Lorenzo Pompili - Personal website'
+publishDir = "docs"
+theme = "PaperMod"
+
+
+[menu]
+  [[menu.main]]
+  identifier = "math"
+  name = "Math"
+  url = "/math/" # Assuming your folder in static/ is named onnx-demo
+  weight = 10
+
+  [[menu.main]]
+  identifier = "cs"
+  name = "Data Science"
+  url = "/cs/" # Update to match your folder name
+  weight = 20
+
+  [[menu.main]]
+  identifier = "blog"
+  name = "Blog"
+  url = "/blog/"
+  weight = 30
+
+
+  [params]
+  env = "production"
+  title = "Lorenzo Pompili"
+  description = "Data Science Portfolio & Blog"
+  author = "Lorenzo Pompili"
+
+[params.profileMode]
+  enabled = true
+  title = "Hi, I'm Lorenzo"
+  subtitle = "I am a Data Scientist and mathematician. Here are some of my projects and contents."
+  imageUrl = "/media/Sea.jpeg" # Put an image in static/ and reference the name here
+  imageWidth = 150
+  imageHeight = 150
+  
+  # Let's add some quick links under your profile
+  [[params.profileMode.buttons]]
+    name = "Mathematics"
+    url = "/math/"
+  [[params.profileMode.buttons]]
+    name = "Data Science"
+    url = "/cs/"
+  [[params.profileMode.buttons]]
+    name = "Blog"
+    url = "/blog/"
+    [[params.profileMode.buttons]]
+    name = "About me"
+    url = "/about_me/"
+
+[security]
+  allowContent = ['.*']
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+    [markup.goldmark.extensions]
+      [markup.goldmark.extensions.passthrough]
+        enable = true
+        [markup.goldmark.extensions.passthrough.delimiters]
+          block = [['\[', '\]'], ['$$', '$$']]
+          inline = [['\(', '\)'], ['$', '$']]

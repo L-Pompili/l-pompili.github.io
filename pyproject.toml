@@ -1,0 +1,19 @@
+[project]
+name = "l-pompili-github-io"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "l-pompili", email = "lorenzo.pompili96@.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "hugo>=0.166.0",
+]
+
+[project.scripts]
+l-pompili-github-io = "l_pompili_github_io:main"
+
+[build-system]
+requires = ["uv_build>=0.12.13,<0.13.0"]
+build-backend = "uv_build"

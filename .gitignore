@@ -1,1 +1,17 @@
-cs/rul/literature/*.pdf
+# La cartella di build
+/public/
+
+# La cache di Hugo (dove salva le immagini processate o i CSS minimizzati)
+/resources/_gen/
+/resources/_gen
+
+# Lock file
+.hugo_build.lock
+
+# File di sistema (sempre utili da ignorare)
+.DS_Store
+*~
+
+.venv/
+uv.lock
+

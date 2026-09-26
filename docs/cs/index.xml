@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Computer and Data Science on Lorenzo Pompili - Personal website</title>
+    <link>http://localhost:1313/cs/</link>
+    <description>Recent content in Computer and Data Science on Lorenzo Pompili - Personal website</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="http://localhost:1313/cs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Deep learning articles</title>
+      <link>http://localhost:1313/cs/dl_reading_list/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/cs/dl_reading_list/</guid>
+      <description>&lt;p&gt;Reading list:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Hinton &amp;amp; Sejnowski (1983).&lt;br&gt;
+&lt;a href=&#34;https://www.cs.toronto.edu/~fritz/absps/optimal.pdf&#34;&gt;Optimal Perceptual Inference&lt;/a&gt; &lt;strong&gt;(Boltzmann machines)&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Rumelhart, Hinton &amp;amp; Williams (1986).&lt;br&gt;
+&lt;a href=&#34;https://www.iro.umontreal.ca/~vincentp/ift3395/lectures/backprop_old.pdf&#34;&gt;Learning representations by back-propagating errors&lt;/a&gt; &lt;strong&gt;(Backpropagation)&lt;/strong&gt;. &lt;em&gt;Nature&lt;/em&gt;, Vol. 323, pp. 533–536.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;LeCun, Bottou, Bengio &amp;amp; Haffner (1998).&lt;br&gt;
+&lt;a href=&#34;http://vision.stanford.edu/cs598_spring07/papers/Lecun98.pdf&#34;&gt;Gradient-based learning applied to document recognition&lt;/a&gt; &lt;strong&gt;(LeNet-5)&lt;/strong&gt;. &lt;em&gt;Proceedings of the IEEE&lt;/em&gt;, Vol. 86, pp. 2278–2324.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Bengio, Ducharme, Vincent &amp;amp; Janvin (2003).&lt;br&gt;
+&lt;a href=&#34;https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf&#34;&gt;A neural probabilistic language model&lt;/a&gt; &lt;a href=&#34;https://proceedings.neurips.cc/paper_files/paper/2000/file/728f206c2a01bf572b5940d7d9a8fa4c-Paper.pdf&#34;&gt;\[link 2\]&lt;/a&gt; &lt;strong&gt;(Bengio NPLM &amp;ndash; Distributed embeddings)&lt;/strong&gt;. &lt;em&gt;J. Mach. Learn. Res.&lt;/em&gt;, Vol. 3, pp. 1137–1155.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Krizhevsky, Sutskever &amp;amp; Hinton (2012).&lt;br&gt;
+&lt;a href=&#34;https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf&#34;&gt;ImageNet Classification with Deep Convolutional Neural Networks&lt;/a&gt; &lt;strong&gt;(AlexNet)&lt;/strong&gt;. &lt;em&gt;In Proceedings of the 25th International Conference on Neural Information Processing Systems (NIPS)&lt;/em&gt;, Vol. 1, pp. 1097–1105.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Domain Adversarial training for RUL prediction</title>
+      <link>http://localhost:1313/cs/rul/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/cs/rul/</guid>
+      <description>&lt;div style=&#34; display: block; margin: auto; padding: 14px; background-color: #f0f0f0; border-radius: 8px; width: 97%; color: #393939; border: 2px solid #ccc;&#34;&gt;
+    Here is the project repository: &lt;a href=&#34;https://github.com/L-Pompili/rul-prediction&#34; target=&#34;_blank&#34; class=&#34;comp-link&#34;&gt;&lt;span class=&#34;link-wrap&#34;&gt;&lt;i class=&#34;fab fa-github github&#34;&gt;&lt;/i&gt;&lt;/span&gt;&lt;span&gt;rul-prediction&lt;/span&gt;&lt;/a&gt;
+    &lt;br&gt;
+    (currently under development, but feel free to check it out and give feedback).
+&lt;/div&gt;
+&lt;h2 id=&#34;introduction-what-is-domain-adaptation&#34;&gt;Introduction: what is Domain Adaptation?&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;RUL&lt;/em&gt; (&amp;ldquo;remaining useful life&amp;rdquo;) prediction for devices is gaining increasing attention in the recent literature. One problem is that of estimating RUL in cases where there training and test data from the sensors come from two different distributions A and B: this is called &lt;i&gt;Domain Adaptation&lt;/i&gt; (DA). This is relevant when the device is used in certain conditions (settings, temperature, pressure,&amp;hellip;) where there is little or no available labeled data, but there is enough labeled data in some other conditions.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

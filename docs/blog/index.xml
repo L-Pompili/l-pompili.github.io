@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Blog on Lorenzo Pompili - Personal website</title>
+    <link>http://localhost:1313/blog/</link>
+    <description>Recent content in Blog on Lorenzo Pompili - Personal website</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 26 Sep 2026 02:06:37 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo website setup</title>
+      <link>http://localhost:1313/blog/hugo_website_setup/</link>
+      <pubDate>Sat, 26 Sep 2026 02:06:37 +0000</pubDate>
+      <guid>http://localhost:1313/blog/hugo_website_setup/</guid>
+      <description>&lt;p&gt;&lt;img alt=&#34;Hugo in action&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/blog/hugo_website_setup/Hugo_screenshot.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Building a personal website can sometimes feel overwhelming, but I recently switched to Hugo (using the PaperMod theme) and found it to be a really refreshing experience. It&amp;rsquo;s fast, simple, and lets you write almost everything in basic plain text, but switching to html with the utmost flexibility whenever needed.&lt;/p&gt;
+&lt;p&gt;For true markdown-only site generators, Quartz does already a great job (and I will probably use it to build parts of my website). What I needed though is a more flexible and customizable SSG.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

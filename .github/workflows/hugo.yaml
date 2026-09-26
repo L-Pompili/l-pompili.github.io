@@ -1,0 +1,62 @@
+name: Deploy Hugo site to Pages
+
+on:
+  push:
+    branches:
+      - main
+  # Ti permette di far partire la action anche manualmente dall'interfaccia di GitHub
+  workflow_dispatch:
+
+# Permessi necessari a GitHub per pubblicare il sito
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Evita che partano build sovrapposte se fai tanti push veloci
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # Job 1: Costruisce il sito
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive # Fondamentale se hai installato il tema come sottomodulo Git
+          fetch-depth: 0        # Utile se il tema usa informazioni sui commit (es. data di modifica)
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: 'latest'
+          extended: true # Obbligatorio se il tuo tema usa SASS/SCSS
+
+      - name: Build with Hugo
+        env:
+          HUGO_ENVIRONMENT: production
+        run: hugo --minify
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  # Job 2: Pubblica il sito costruito
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

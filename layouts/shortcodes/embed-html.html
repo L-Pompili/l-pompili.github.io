@@ -1,0 +1,5 @@
+{{ with .Page.Resources.Get (.Get 0) }}
+  {{ .Content | safeHTML }}
+{{ else }}
+  <strong style="color: red;">Error: Could not find HTML file {{ .Get 0 }} in this folder.</strong>
+{{ end }}

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Domain Adversarial training for RUL prediction | Lorenzo Pompili - Personal website</title>
+<meta name="keywords" content="">
+<meta name="description" content="
+    Here is the project repository: rul-prediction
+    
+    (currently under development, but feel free to check it out and give feedback).
+
+Introduction: what is Domain Adaptation?
+RUL (&ldquo;remaining useful life&rdquo;) prediction for devices is gaining increasing attention in the recent literature. One problem is that of estimating RUL in cases where there training and test data from the sensors come from two different distributions A and B: this is called Domain Adaptation (DA). This is relevant when the device is used in certain conditions (settings, temperature, pressure,&hellip;) where there is little or no available labeled data, but there is enough labeled data in some other conditions.">
+<meta name="author" content="Lorenzo Pompili">
+<link rel="canonical" href="http://localhost:1313/cs/rul/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.9c2b8ba233c06256e388fc7e55cf791075577dbb1c842189696138ef12e834d7.css" integrity="sha256-nCuLojPAYlbjiPx&#43;Vc95EHVXfbschCGJaWE47xLoNNc=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/cs/rul/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '\\[', right: '\\]', display: true},
+                {left: '$', right: '$', display: false},
+                {left: '\\(', right: '\\)', display: false}
+            ],
+            throwOnError : false
+        });
+    });
+</script>
+<meta property="og:url" content="http://localhost:1313/cs/rul/">
+  <meta property="og:site_name" content="Lorenzo Pompili - Personal website">
+  <meta property="og:title" content="Domain Adversarial training for RUL prediction">
+  <meta property="og:description" content="Here is the project repository: rul-prediction (currently under development, but feel free to check it out and give feedback). Introduction: what is Domain Adaptation? RUL (“remaining useful life”) prediction for devices is gaining increasing attention in the recent literature. One problem is that of estimating RUL in cases where there training and test data from the sensors come from two different distributions A and B: this is called Domain Adaptation (DA). This is relevant when the device is used in certain conditions (settings, temperature, pressure,…) where there is little or no available labeled data, but there is enough labeled data in some other conditions.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="cs">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Domain Adversarial training for RUL prediction">
+  <meta name="twitter:description" content="Here is the project repository: rul-prediction (currently under development, but feel free to check it out and give feedback). Introduction: what is Domain Adaptation? RUL (“remaining useful life”) prediction for devices is gaining increasing attention in the recent literature. One problem is that of estimating RUL in cases where there training and test data from the sensors come from two different distributions A and B: this is called Domain Adaptation (DA). This is relevant when the device is used in certain conditions (settings, temperature, pressure,…) where there is little or no available labeled data, but there is enough labeled data in some other conditions.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Computer and Data Science",
+      "item": "http://localhost:1313/cs/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Domain Adversarial training for RUL prediction",
+      "item": "http://localhost:1313/cs/rul/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Domain Adversarial training for RUL prediction",
+  "name": "Domain Adversarial training for RUL prediction",
+  "description": " Here is the project repository: rul-prediction (currently under development, but feel free to check it out and give feedback). Introduction: what is Domain Adaptation? RUL (\u0026ldquo;remaining useful life\u0026rdquo;) prediction for devices is gaining increasing attention in the recent literature. One problem is that of estimating RUL in cases where there training and test data from the sensors come from two different distributions A and B: this is called Domain Adaptation (DA). This is relevant when the device is used in certain conditions (settings, temperature, pressure,\u0026hellip;) where there is little or no available labeled data, but there is enough labeled data in some other conditions.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": " Here is the project repository: rul-prediction (currently under development, but feel free to check it out and give feedback). Introduction: what is Domain Adaptation? RUL (“remaining useful life”) prediction for devices is gaining increasing attention in the recent literature. One problem is that of estimating RUL in cases where there training and test data from the sensors come from two different distributions A and B: this is called Domain Adaptation (DA). This is relevant when the device is used in certain conditions (settings, temperature, pressure,…) where there is little or no available labeled data, but there is enough labeled data in some other conditions.\nDomain Adversarial training is one approach used to address such situations. The typical scenario involves a first “feature extraction” block that maps information from the data to representations in a latent space, followed by a classification block that tries to classify whether the data come from distribution A or B. A gradient-reversal layer for this classifier makes possible for the extractor to only select features that are invariant across the two distributions. Modifications of this approach have been considered, like multi-domain sourcing, CDAN (conditional DANN), integration with attention and TCN,… See Wang et al. 2025 for a recent review.\nWang et al. 2025 DANN structure and gradient reversal layer To understand how Domain-Adversarial Neural Networks (DANN) achieve this domain-invariant representation, it is helpful to break the architecture down into three distinct components:\nThe Feature Extractor $G_f$: This initial block processes the raw, multivariate time series data — such as temperature, pressure, and vibration readings from a turbofan engine — and maps it into a latent feature space. The Label Predictor $G_y$: This branch operates on the extracted features to perform the primary task. While traditional DANNs were heavily formulated around classification, in the context of RUL prediction, this is typically a regression network attempting to estimate the remaining life cycles of the equipment based on the source data. The Domain Classifier $G_d$: This parallel branch also takes the latent features as input, but its sole job is to determine the origin of the data — identifying whether the current sample comes from the source distribution, Domain A, or the target distribution, Domain B. Minimal, schematic structure of a DANN\nThe training process relies on a minimax game. The goal is to optimize the network parameters to minimize the error of the Label Predictor, ensuring accurate RUL estimates on the labeled source data, while simultaneously maximizing the error of the Domain Classifier, ensuring the extracted features contain no domain-specific signatures. We do this because we want the feature extractor to learn representations that are predictive of the RUL, but not predictive of the domain. If the domain classifier can easily distinguish between source and target features, it means the feature extractor is learning domain-specific features, which would hurt performance on the target domain. We only want our regressor to make estimates based on features that are common across both domains, so that it can generalize well to the target domain where we have no labels.\nMathematically, if we denote the parameters of these three blocks as $\\theta_f$, $\\theta_y$, and $\\theta_d$ respectively, we are seeking a saddle point $\\hat{\\theta}_f, \\hat{\\theta}_y, \\hat{\\theta}_d$ such that:\n$$ E(\\hat{\\theta}_f, \\hat{\\theta}_y, \\theta_d) \\leq E(\\hat{\\theta}_f, \\hat{\\theta}_y, \\hat{\\theta}_d) \\leq E(\\theta_f, \\hat{\\theta}_y, \\hat{\\theta}_d) $$where $E$ represents the combined objective function. Implementing this minimax optimization within standard backpropagation frameworks introduces a structural challenge: how do you simultaneously minimize one loss and maximize another during a single training step?\nThis is elegantly solved by the Gradient Reversal Layer, or GRL. Inserted exactly between the Feature Extractor $G_f$ and the Domain Classifier $G_d$, the GRL acts as a simple identity function during the forward pass. This allows the extracted features to flow unchanged into the domain classifier so it can make its prediction. However, during the backward pass, the GRL multiplies the gradient by a negative constant $-\\lambda$ (that can be adjusted before and during training).\nWhen the domain classifier calculates its loss and backpropagates to update its weights to get better at distinguishing between the different operational conditions, the reversed gradients flow back into the feature extractor. This forces the feature extractor to update its weights in the exact opposite direction, as to maximize the domain classifier’s loss. Since the domain classifier is actively pushing for minimizing the loss, the Nash’s equilibrium between the two layers is that the feature extractor does not let any information leak downstream that can be used to distinguish between the domains, effectively “unlearning” any feature that gives away the domain.\nAs training progresses, the extractor is pushed to produce representations that are highly predictive of the RUL, yet completely agnostic to the underlying environmental or operational domain, minimizing the bias coming from domain-specific variations.\nLiterature Heimes (2008). Recurrent neural networks for remaining useful life estimation. In 2008 International Conference on Prognostics and Health Management, Vol. , pp. 1-6.\nGanin, Ustinova, Ajakan, Germain, Larochelle, Laviolette, Marchand \u0026 Lempitsky (2016). Domain-Adversarial Training of Neural Networks (DANNs).\nMathew, Toby, Singh, Rao \u0026 Kumar (2017). Prediction of Remaining Useful Lifetime (RUL) of turbofan engine using machine learning. In 2017 IEEE International Conference on Circuits and Systems (ICCS), Vol. , pp. 306-311.\nLong, Cao, Wang \u0026 Jordan (2018). Conditional adversarial domain adaptation (CDANs). In Proceedings of the 32nd International Conference on Neural Information Processing Systems, pp. 1647–1657.\nZhao, Zhang, Wang, Zhou \u0026 Cheng (2019). A recurrent neural network approach for remaining useful life prediction utilizing a novel trend features construction method. Measurement, Vol. 146, pp. 279–288.\nCosta, Akçay, Zhang \u0026 Kaymak (2020). Remaining useful lifetime prediction via deep domain adaptation. Reliability Engineering \u0026 System Safety, Vol. 195, pp. 106682.\nDuan, Xiao, Li \u0026 Zhang (2022). Cross-Domain Remaining Useful Life Prediction Based on Adversarial Training. Machines, Vol. 10.\nJavanmardi \u0026 Hüllermeier (2022). Conformal Prediction Intervals for Remaining Useful Lifetime Estimation.\nLi, Li, Zuo, Zhu \u0026 Shen (2022). Domain Adaptive Remaining Useful Life Prediction With Transformer [GitHub repository]. IEEE Transactions on Instrumentation and Measurement, Vol. 71, pp. 1-13.\nZhang, Shen, Zhang \u0026 Foo (2022). Few-Shot Adaptation of Pre-Trained Networks for Domain Shift.\nChaoub, Voisin, Cerisara \u0026 Iung (2024). Few-shot remaining useful life prognostics through auxiliary training with related dataset. Neural Comput. Appl., Vol. 37, pp. 4493–4509.\nHan, Yin, Zhang, Wang, Bao, Song, Liu, Ma \u0026 Wang (2024). Remaining useful life prediction of turbofan engines based on dual attention mechanism guided parallel CNN-LSTM. Measurement Science and Technology, Vol. 36, pp. 016160.\nSun, Wang, Xiao, Peng \u0026 Zhou (2024). Few-shot RUL prediction for engines based on CNN-GRU model. Scientific Reports, Vol. 14, pp. 16041.\nWen, Lyu \u0026 Chen (2024). An unsupervised subdomain adversarial network for remaining useful life estimation under various conditions. Quality and Reliability Engineering International, Vol. 40, pp. 1652-1671.\nLiu, Kulevome, Zhang, Zhang, Li \u0026 Qiu (2025). Multi-Head Attention-Enhanced TCN-CNN for Intelligent Bearing Fault Diagnosis Under Complex Operating Conditions (Attention + TCN / bearings). In Proceedings of the 9th International Conference on Electronic Information Technology and Computer Engineering, pp. 1152–1156.\nLv, Zhou, Wen, Shen \u0026 Chen (2025). Remaining Useful Life Prediction based on Multisource Domain Transfer and Unsupervised Alignment. Eksploatacja i Niezawodność – Maintenance and Reliability, Vol. 27.\nMo, Zhou, Yin \u0026 Si (2025). A survey on few-shot learning for remaining useful life prediction (Few-shot review). Reliability Engineering \u0026 System Safety, Vol. 257, pp. 110850.\nWang, Ragab, Hou, Chen, Wu \u0026 Li (2025). Deep Domain Adaptation for Turbofan Engine Remaining Useful Life Prediction: Methodologies, Evaluation and Future Trends (Review).\nXu, Law, Rahman, Rameezdeen \u0026 Chow (2025). Remaining useful life prediction based on a subdomain adaptation and contextual information compensation network. Knowledge-Based Systems, Vol. 325, pp. 113841.\nYan, Ye, He \u0026 He (2025). An unsupervised subdomain adaptation of cross-domain remaining useful life prediction for sensor-equipped equipments. Computers \u0026 Industrial Engineering, Vol. 203, pp. 110967.\n",
+  "wordCount" : "1294",
+  "inLanguage": "en",
+  "datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Lorenzo Pompili"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/cs/rul/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Lorenzo Pompili - Personal website",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Lorenzo Pompili - Personal website (Alt + H)">Lorenzo Pompili - Personal website</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/math/" title="Math">
+                    <span>Math</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/cs/" title="Data Science">
+                    <span>Data Science</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/blog/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Domain Adversarial training for RUL prediction
+    </h1>
+    <div class="post-meta">
+
+<span>Lorenzo Pompili</span>
+
+</div>
+  </header> 
+  <div class="post-content md-content"><div style=" display: block; margin: auto; padding: 14px; background-color: #f0f0f0; border-radius: 8px; width: 97%; color: #393939; border: 2px solid #ccc;">
+    Here is the project repository: <a href="https://github.com/L-Pompili/rul-prediction" target="_blank" class="comp-link"><span class="link-wrap"><i class="fab fa-github github"></i></span><span>rul-prediction</span></a>
+    <br>
+    (currently under development, but feel free to check it out and give feedback).
+</div>
+<h2 id="introduction-what-is-domain-adaptation">Introduction: what is Domain Adaptation?<a hidden class="anchor" aria-hidden="true" href="#introduction-what-is-domain-adaptation">#</a></h2>
+<p><em>RUL</em> (&ldquo;remaining useful life&rdquo;) prediction for devices is gaining increasing attention in the recent literature. One problem is that of estimating RUL in cases where there training and test data from the sensors come from two different distributions A and B: this is called <i>Domain Adaptation</i> (DA). This is relevant when the device is used in certain conditions (settings, temperature, pressure,&hellip;) where there is little or no available labeled data, but there is enough labeled data in some other conditions.</p>
+<p><img alt="mathworks.com" loading="lazy" src="https://www.mathworks.com/company/technical-articles/three-ways-to-estimate-remaining-useful-life-for-predictive-maintenance/_jcr_content/mainParsys/image_0_copy_copy_co_1738644073.adapt.full.medium.jpg/1762986821247.jpg"></p>
+<p><em>Domain Adversarial training</em> is one approach used to address such situations. The typical scenario involves a first &ldquo;feature extraction&rdquo; block that maps information from the data to representations in a latent space, followed by a classification block that tries to classify whether the data come from distribution A or B. A gradient-reversal layer for this classifier makes possible for the extractor to only select features that are invariant across the two distributions. Modifications of this approach have been considered, like multi-domain sourcing, CDAN (conditional DANN), integration with attention and TCN,&hellip; See <a href="https://arxiv.org/abs/2510.03604">Wang et al. 2025</a> for a recent review.</p>
+<p><img alt="Wang et al. 2025" loading="lazy" src="/cs/rul/taxonomy_tree.png"></p>
+<div style="text-align: right; display: block; margin: auto; font-size: 12px;  width: 100%;"><a href="https://arxiv.org/abs/2510.03604" class="external">Wang et al. 2025</a></div>
+<h2 id="dann-structure-and-gradient-reversal-layer">DANN structure and gradient reversal layer<a hidden class="anchor" aria-hidden="true" href="#dann-structure-and-gradient-reversal-layer">#</a></h2>
+<p>To understand how Domain-Adversarial Neural Networks (DANN) achieve this domain-invariant representation, it is helpful to break the architecture down into three distinct components:</p>
+<ul>
+<li><strong>The Feature Extractor</strong> $G_f$: This initial block processes the raw, multivariate time series data — such as temperature, pressure, and vibration readings from a turbofan engine — and maps it into a latent feature space.</li>
+<li><strong>The Label Predictor</strong> $G_y$: This branch operates on the extracted features to perform the primary task. While traditional DANNs were heavily formulated around classification, in the context of RUL prediction, this is typically a regression network attempting to estimate the remaining life cycles of the equipment based on the source data.</li>
+<li><strong>The Domain Classifier</strong> $G_d$: This parallel branch also takes the latent features as input, but its sole job is to determine the origin of the data — identifying whether the current sample comes from the source distribution, Domain A, or the target distribution, Domain B.</li>
+</ul>
+<p><img alt="DANN Structure" loading="lazy" src="/cs/rul/DANN_diagram.svg">
+<em>Minimal, schematic structure of a DANN</em></p>
+<p>The training process relies on a minimax game. The goal is to optimize the network parameters to minimize the error of the Label Predictor, ensuring accurate RUL estimates on the labeled source data, while simultaneously maximizing the error of the Domain Classifier, ensuring the extracted features contain no domain-specific signatures. We do this because we want the feature extractor to learn representations that are predictive of the RUL, but not predictive of the domain. If the domain classifier can easily distinguish between source and target features, it means the feature extractor is learning domain-specific features, which would hurt performance on the target domain. We only want our regressor to make estimates based on features that are common across both domains, so that it can generalize well to the target domain where we have no labels.</p>
+<p>Mathematically, if we denote the parameters of these three blocks as $\theta_f$, $\theta_y$, and $\theta_d$ respectively, we are seeking a saddle point $\hat{\theta}_f, \hat{\theta}_y, \hat{\theta}_d$ such that:</p>
+$$ E(\hat{\theta}_f, \hat{\theta}_y, \theta_d) \leq E(\hat{\theta}_f, \hat{\theta}_y, \hat{\theta}_d) \leq E(\theta_f, \hat{\theta}_y, \hat{\theta}_d) $$<p>where $E$ represents the combined objective function. Implementing this minimax optimization within standard backpropagation frameworks introduces a structural challenge: how do you simultaneously minimize one loss and maximize another during a single training step?</p>
+<p>This is elegantly solved by the Gradient Reversal Layer, or GRL. Inserted exactly between the Feature Extractor $G_f$ and the Domain Classifier $G_d$, the GRL acts as a simple identity function during the forward pass. This allows the extracted features to flow unchanged into the domain classifier so it can make its prediction. However, during the backward pass, the GRL multiplies the gradient by a negative constant $-\lambda$ (that can be adjusted before and during training).</p>
+<p>When the domain classifier calculates its loss and backpropagates to update its weights to get better at distinguishing between the different operational conditions, the reversed gradients flow back into the feature extractor. This forces the feature extractor to update its weights in the exact opposite direction, as to maximize the domain classifier&rsquo;s loss. Since the domain classifier is actively pushing for minimizing the loss, the Nash&rsquo;s equilibrium between the two layers is that the feature extractor does not let any information leak downstream that can be used to distinguish between the domains, effectively “unlearning” any feature that gives away the domain.</p>
+<p>As training progresses, the extractor is pushed to produce representations that are highly predictive of the RUL, yet completely agnostic to the underlying environmental or operational domain, minimizing the bias coming from domain-specific variations.</p>
+<h2 id="literature">Literature<a hidden class="anchor" aria-hidden="true" href="#literature">#</a></h2>
+
+  <ul>
+
+<li>
+<p>Heimes (2008).
+<br>
+<a href="https://ieeexplore.ieee.org/document/4711422" class="external">Recurrent neural networks for remaining useful life estimation</a>. <em>In 2008 International Conference on Prognostics and Health Management</em>, Vol. , pp. 1-6.</p>
+</li>
+<li>
+<p>Ganin, Ustinova, Ajakan, Germain, Larochelle, Laviolette, Marchand & Lempitsky (2016).
+<br>
+<a href="https://arxiv.org/abs/1505.07818" class="external">Domain-Adversarial Training of Neural Networks</a> <strong>(DANNs)</strong>.</p>
+</li>
+<li>
+<p>Mathew, Toby, Singh, Rao & Kumar (2017).
+<br>
+<a href="https://ieeexplore.ieee.org/document/8326010" class="external">Prediction of Remaining Useful Lifetime (RUL) of turbofan engine using machine learning</a>. <em>In 2017 IEEE International Conference on Circuits and Systems (ICCS)</em>, Vol. , pp. 306-311.</p>
+</li>
+<li>
+<p>Long, Cao, Wang & Jordan (2018).
+<br>
+<a href="https://arxiv.org/abs/1705.10667" class="external">Conditional adversarial domain adaptation</a> <strong>(CDANs)</strong>. <em>In Proceedings of the 32nd International Conference on Neural Information Processing Systems</em>, pp. 1647–1657.</p>
+</li>
+<li>
+<p>Zhao, Zhang, Wang, Zhou & Cheng (2019).
+<br>
+<a href="https://arxiv.org/abs/2112.05372" class="external">A recurrent neural network approach for remaining useful life prediction utilizing a novel trend features construction method</a>. <em>Measurement</em>, Vol. 146, pp. 279–288.</p>
+</li>
+<li>
+<p>Costa, Akçay, Zhang & Kaymak (2020).
+<br>
+<a href="https://arxiv.org/abs/1907.07480" class="external">Remaining useful lifetime prediction via deep domain adaptation</a>. <em>Reliability Engineering & System Safety</em>, Vol. 195, pp. 106682.</p>
+</li>
+<li>
+<p>Duan, Xiao, Li & Zhang (2022).
+<br>
+<a href="https://www.mdpi.com/2075-1702/10/6/438" class="external">Cross-Domain Remaining Useful Life Prediction Based on Adversarial Training</a>. <em>Machines</em>, Vol. 10.</p>
+</li>
+<li>
+<p>Javanmardi & Hüllermeier (2022).
+<br>
+<a href="https://arxiv.org/abs/2212.14612" class="external">Conformal Prediction Intervals for Remaining Useful Lifetime Estimation</a>.</p>
+</li>
+<li>
+<p>Li, Li, Zuo, Zhu & Shen (2022).
+<br>
+<a href="https://ieeexplore.ieee.org/document/9864208" class="external">Domain Adaptive Remaining Useful Life Prediction With Transformer</a> <a href="https://github.com/TL-UESTC/Domain-Adaptive-Remaining-Useful-Life-Prediction-with-Transformer" class="external">[GitHub repository]</a>. <em>IEEE Transactions on Instrumentation and Measurement</em>, Vol. 71, pp. 1-13.</p>
+</li>
+<li>
+<p>Zhang, Shen, Zhang & Foo (2022).
+<br>
+<a href="https://arxiv.org/abs/2205.15234" class="external">Few-Shot Adaptation of Pre-Trained Networks for Domain Shift</a>.</p>
+</li>
+<li>
+<p>Chaoub, Voisin, Cerisara & Iung (2024).
+<br>
+<a href="https://hal.univ-lorraine.fr/hal-04819657v1/document" class="external">Few-shot remaining useful life prognostics through auxiliary training with related dataset</a>. <em>Neural Comput. Appl.</em>, Vol. 37, pp. 4493–4509.</p>
+</li>
+<li>
+<p>Han, Yin, Zhang, Wang, Bao, Song, Liu, Ma & Wang (2024).
+<br>
+<a href="https://doi.org/10.1088/1361-6501/ad8946" class="external">Remaining useful life prediction of turbofan engines based on dual attention mechanism guided parallel CNN-LSTM</a>. <em>Measurement Science and Technology</em>, Vol. 36, pp. 016160.</p>
+</li>
+<li>
+<p>Sun, Wang, Xiao, Peng & Zhou (2024).
+<br>
+<a href="https://doi.org/10.1038/s41598-024-66377-3" class="external">Few-shot RUL prediction for engines based on CNN-GRU model</a>. <em>Scientific Reports</em>, Vol. 14, pp. 16041.</p>
+</li>
+<li>
+<p>Wen, Lyu & Chen (2024).
+<br>
+<a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/qre.3480" class="external">An unsupervised subdomain adversarial network for remaining useful life estimation under various conditions</a>. <em>Quality and Reliability Engineering International</em>, Vol. 40, pp. 1652-1671.</p>
+</li>
+<li>
+<p>Liu, Kulevome, Zhang, Zhang, Li & Qiu (2025).
+<br>
+<a href="https://doi.org/10.1145/3766671.3766870" class="external">Multi-Head Attention-Enhanced TCN-CNN for Intelligent Bearing Fault Diagnosis Under Complex Operating Conditions</a> <strong>(Attention + TCN / bearings)</strong>. <em>In Proceedings of the 9th International Conference on Electronic Information Technology and Computer Engineering</em>, pp. 1152–1156.</p>
+</li>
+<li>
+<p>Lv, Zhou, Wen, Shen & Chen (2025).
+<br>
+<a href="https://doi.org/10.17531/ein/194116" class="external">Remaining Useful Life Prediction based on Multisource Domain Transfer and Unsupervised Alignment</a>. <em>Eksploatacja i Niezawodność – Maintenance and Reliability</em>, Vol. 27.</p>
+</li>
+<li>
+<p>Mo, Zhou, Yin & Si (2025).
+<br>
+<a href="https://www.sciencedirect.com/science/article/pii/S0951832025000535" class="external">A survey on few-shot learning for remaining useful life prediction</a> <strong>(Few-shot review)</strong>. <em>Reliability Engineering & System Safety</em>, Vol. 257, pp. 110850.</p>
+</li>
+<li>
+<p>Wang, Ragab, Hou, Chen, Wu & Li (2025).
+<br>
+<a href="https://arxiv.org/abs/2510.03604" class="external">Deep Domain Adaptation for Turbofan Engine Remaining Useful Life Prediction: Methodologies, Evaluation and Future Trends</a> <strong>(Review)</strong>.</p>
+</li>
+<li>
+<p>Xu, Law, Rahman, Rameezdeen & Chow (2025).
+<br>
+<a href="https://www.sciencedirect.com/science/article/pii/S0950705125008871" class="external">Remaining useful life prediction based on a subdomain adaptation and contextual information compensation network</a>. <em>Knowledge-Based Systems</em>, Vol. 325, pp. 113841.</p>
+</li>
+<li>
+<p>Yan, Ye, He & He (2025).
+<br>
+<a href="https://www.sciencedirect.com/science/article/pii/S0360835225001135" class="external">An unsupervised subdomain adaptation of cross-domain remaining useful life prediction for sensor-equipped equipments</a>. <em>Computers & Industrial Engineering</em>, Vol. 203, pp. 110967.</p>
+</li>
+</ul>
+
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Lorenzo Pompili - Personal website</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
