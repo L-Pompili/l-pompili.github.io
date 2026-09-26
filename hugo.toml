@@ -1,7 +1,6 @@
 baseURL = "https://l-pompili.github.io/"
 locale = 'en-us'
 title = 'Lorenzo Pompili - Personal website'
-publishDir = "docs"
 theme = "PaperMod"
 
 
