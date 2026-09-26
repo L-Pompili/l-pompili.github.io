@@ -11,3 +11,6 @@
 # File di sistema (sempre utili da ignorare)
 .DS_Store
 *~
+
+.venv/
+uv.lock

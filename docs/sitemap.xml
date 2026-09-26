@@ -6,6 +6,14 @@
   </url><url>
     <loc>http://localhost:1313/categories/</loc>
   </url><url>
+    <loc>http://localhost:1313/cs/</loc>
+  </url><url>
+    <loc>http://localhost:1313/cs/dl_reading_list/</loc>
+  </url><url>
+    <loc>http://localhost:1313/cs/rul/</loc>
+  </url><url>
+    <loc>http://localhost:1313/math/</loc>
+  </url><url>
     <loc>http://localhost:1313/tags/</loc>
   </url>
 </urlset>
