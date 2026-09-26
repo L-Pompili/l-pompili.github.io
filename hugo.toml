@@ -44,11 +44,25 @@ theme = "PaperMod"
     name = "Mathematics"
     url = "/math/"
   [[params.profileMode.buttons]]
-    name = "View ONNX Demo"
-    url = "/yu-gi-oh_inference_model/"
+    name = "Data Science"
+    url = "/cs/"
   [[params.profileMode.buttons]]
-    name = "Read the Blog"
+    name = "Blog"
     url = "/blog/"
+    [[params.profileMode.buttons]]
+    name = "About me"
+    url = "/about_me/"
 
 [security]
   allowContent = ['.*']
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+    [markup.goldmark.extensions]
+      [markup.goldmark.extensions.passthrough]
+        enable = true
+        [markup.goldmark.extensions.passthrough.delimiters]
+          block = [['\[', '\]'], ['$$', '$$']]
+          inline = [['\(', '\)'], ['$', '$']]

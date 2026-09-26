@@ -2,11 +2,15 @@
 title: Computer and Data Science
 ---
 
+## Time series:
+
+- <a href="https://github.com/L-Pompili/rul-prediction" target="_blank" class="comp-link"><span class="link-wrap"><i class="fab fa-github github"></i></span><span>vacuum_ad</span></a>: analysis of the pressure of particle accelerator waveguides in order to find anomalies. We use Kalman and particle filters to recover the hidden parameters of the evolution and flag when they jump or drift beyond a certain threshold.
+
 ## Deep learning:
 
 - <a href="https://github.com/L-Pompili/rul-prediction" target="_blank" class="comp-link"><span class="link-wrap"><i class="fab fa-github github"></i></span><span>rul-prediction</span></a>: a time series project on [Domain Adversarial training for RUL prediction](rul/).
 - <a href="https://github.com/L-Pompili/transformer-study" target="_blank" class="comp-link"><span class="link-wrap"><i class="fab fa-github github"></i></span><span>transformer-study</span></a>: a study repository for PyTorch transformer implementation.
-- <a href="/cs/yu-gi-oh_inference_model/index.html">Browser-supported text generation experiment</a> (based on transformer-study).
+- <a href="/static/yu-gi-oh_inference_model/index.html">Browser-supported text generation experiment</a> (based on transformer-study).
 - [Deep learning reading list](dl_reading_list)
 
 
@@ -17,5 +21,5 @@ title: Computer and Data Science
 
 ## Miscellaneous:
 
-- [Simple BibTex to HTML script](/static/bibtex_to_html.html)
+- [Simple BibTex to HTML script](/static/bibtex_to_html/bibtex_to_html.html)
 - [Sticky notes](/static/lavagna.html) (html).</li>

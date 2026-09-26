@@ -1,6 +1,7 @@
-a {
+.post-content a {
   color: #0066cc;
-  text-decoration: none;
+  text-decoration: none !important;
+  box-shadow: none !important; /* Removes PaperMod's built-in underline */
   transition: color 0.5s ease;
 }
 
@@ -8,12 +9,12 @@ a:visited {
   /*color: #551a8b;*/
 }
 
-a:hover {
+.post-content a:hover {
   color: #003366;
-  text-decoration: underline;
+  text-decoration: underline !important;
 }
 
-a:active {
+.post-content a:active {
   color: #ff0000;
 }
 
@@ -69,6 +70,10 @@ h3 { margin-bottom: 5px; color: #333; }
 #status { font-weight: bold; margin-bottom: 10px; }
 
 /*Composite links*/
+.comp-link {
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
 .comp-link * {
     transition: inherit;
 }
@@ -88,11 +93,13 @@ h3 { margin-bottom: 5px; color: #333; }
 .comp-link:hover .linkedin { color: #0077b5; }
 .comp-link:hover .github { color: #333; }
 
+/*
 img {
   display: block;
   margin: auto;
   width: 50%;
 }
+*/
 
 @media screen and (max-width: 768px) {
   .container {

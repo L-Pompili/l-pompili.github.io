@@ -6,7 +6,44 @@
     <description>Recent content on Lorenzo Pompili - Personal website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
+    <lastBuildDate>Sat, 26 Sep 2026 02:06:37 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo website setup</title>
+      <link>http://localhost:1313/blog/hugo_website_setup/</link>
+      <pubDate>Sat, 26 Sep 2026 02:06:37 +0000</pubDate>
+      <guid>http://localhost:1313/blog/hugo_website_setup/</guid>
+      <description>&lt;p&gt;&lt;img alt=&#34;Hugo in action&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/blog/hugo_website_setup/Hugo_screenshot.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Building a personal website can sometimes feel overwhelming, but I recently switched to Hugo (using the PaperMod theme) and found it to be a really refreshing experience. It&amp;rsquo;s fast, simple, and lets you write almost everything in basic plain text, but switching to html with the utmost flexibility whenever needed.&lt;/p&gt;
+&lt;p&gt;For true markdown-only site generators, Quartz does already a great job (and I will probably use it to build parts of my website). What I needed though is a more flexible and customizable SSG.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>About me</title>
+      <link>http://localhost:1313/about_me/</link>
+      <pubDate>Sat, 26 Sep 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/about_me/</guid>
+      <description>&lt;head&gt;
+    &lt;style&gt;
+        .profile-blurb {
+            /*color: #555;*/
+            line-height: 1.5;
+            font-family: sans-serif; /* Added for preview consistency */
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;div id=&#34;col1&#34;&gt;
+    &lt;p class=&#34;profile-blurb&#34;&gt;
+        &lt;a href=&#34;https://github.com/L-Pompili&#34; target=&#34;_blank&#34; class=&#34;comp-link&#34;&gt;
+            &lt;span class=&#34;link-wrap&#34;&gt;&lt;i class=&#34;fab fa-github github&#34;&gt;&lt;/i&gt;&lt;/span&gt;&lt;span&gt;github.com/L-Pompili&lt;/span&gt;
+        &lt;/a&gt;
+        &lt;br&gt;
+        &lt;a href=&#34;https://linkedin.com/in/l-pompili&#34; target=&#34;_blank&#34; class=&#34;comp-link&#34;&gt;
+            &lt;span class=&#34;link-wrap&#34;&gt;&lt;i class=&#34;fab fa-linkedin linkedin&#34;&gt;&lt;/i&gt;&lt;/span&gt;&lt;span&gt;www.linkedin.com/in/l-pompili&lt;/span&gt;
+        &lt;/a&gt;
+    &lt;/p&gt;
+&lt;/div&gt;
+&lt;h4 id=&#34;pictures-of-me-mfo&#34;&gt;&lt;a href=&#34;https://opc.mfo.de/person_detail?id=52693&#34;&gt;Pictures of me (MFO)&lt;/a&gt;&lt;/h4&gt;</description>
+    </item>
     <item>
       <title>Deep learning articles</title>
       <link>http://localhost:1313/cs/dl_reading_list/</link>
@@ -28,7 +65,7 @@
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;Bengio, Ducharme, Vincent &amp;amp; Janvin (2003).&lt;br&gt;
-&lt;a href=&#34;https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf&#34;&gt;A neural probabilistic language model&lt;/a&gt; &lt;a href=&#34;https://proceedings.neurips.cc/paper_files/paper/2000/file/728f206c2a01bf572b5940d7d9a8fa4c-Paper.pdf&#34;&gt;[link 2]&lt;/a&gt; &lt;strong&gt;(Bengio NPLM &amp;ndash; Distributed embeddings)&lt;/strong&gt;. &lt;em&gt;J. Mach. Learn. Res.&lt;/em&gt;, Vol. 3, pp. 1137–1155.&lt;/p&gt;
+&lt;a href=&#34;https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf&#34;&gt;A neural probabilistic language model&lt;/a&gt; &lt;a href=&#34;https://proceedings.neurips.cc/paper_files/paper/2000/file/728f206c2a01bf572b5940d7d9a8fa4c-Paper.pdf&#34;&gt;\[link 2\]&lt;/a&gt; &lt;strong&gt;(Bengio NPLM &amp;ndash; Distributed embeddings)&lt;/strong&gt;. &lt;em&gt;J. Mach. Learn. Res.&lt;/em&gt;, Vol. 3, pp. 1137–1155.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;Krizhevsky, Sutskever &amp;amp; Hinton (2012).&lt;br&gt;
@@ -39,7 +76,13 @@
       <link>http://localhost:1313/cs/rul/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/cs/rul/</guid>
-      <description>&lt;p&gt;&lt;em&gt;RUL&lt;/em&gt; (&amp;ldquo;remaining useful life&amp;rdquo;) prediction for devices is gaining increasing attention in the recent literature. One problem is that of estimating RUL in cases where there training and test data from the sensors come from two different distributions A and B: this is called &lt;!-- raw HTML omitted --&gt;Domain Adaptation&lt;!-- raw HTML omitted --&gt; (DA). This is relevant when the device is used in certain conditions (settings, temperature, pressure,&amp;hellip;) where there is little or no available labeled data, but there is enough labeled data in some other conditions.&lt;/p&gt;</description>
+      <description>&lt;div style=&#34; display: block; margin: auto; padding: 14px; background-color: #f0f0f0; border-radius: 8px; width: 97%; color: #393939; border: 2px solid #ccc;&#34;&gt;
+    Here is the project repository: &lt;a href=&#34;https://github.com/L-Pompili/rul-prediction&#34; target=&#34;_blank&#34; class=&#34;comp-link&#34;&gt;&lt;span class=&#34;link-wrap&#34;&gt;&lt;i class=&#34;fab fa-github github&#34;&gt;&lt;/i&gt;&lt;/span&gt;&lt;span&gt;rul-prediction&lt;/span&gt;&lt;/a&gt;
+    &lt;br&gt;
+    (currently under development, but feel free to check it out and give feedback).
+&lt;/div&gt;
+&lt;h2 id=&#34;introduction-what-is-domain-adaptation&#34;&gt;Introduction: what is Domain Adaptation?&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;RUL&lt;/em&gt; (&amp;ldquo;remaining useful life&amp;rdquo;) prediction for devices is gaining increasing attention in the recent literature. One problem is that of estimating RUL in cases where there training and test data from the sensors come from two different distributions A and B: this is called &lt;i&gt;Domain Adaptation&lt;/i&gt; (DA). This is relevant when the device is used in certain conditions (settings, temperature, pressure,&amp;hellip;) where there is little or no available labeled data, but there is enough labeled data in some other conditions.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

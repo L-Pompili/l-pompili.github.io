@@ -18,6 +18,6 @@ title: Mathematics
     Miscellaneous:
 </p>
 <ul>
-    <li><a href="/cs/bibtex_to_html/bibtex_to_html.html"/>BibTex to HTML converter</a></li>
+    <li><a href="/static/bibtex_to_html/bibtex_to_html.html"/>BibTex to HTML converter</a></li>
 </ul>
 

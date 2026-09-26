@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html>
+---
+title: About me
+date: 2026-09-26
+---
+
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="/style/style.css">
     <style>
         .profile-blurb {
             /*color: #555;*/
@@ -12,9 +12,8 @@
         }
     </style>
 </head>
-<body>
+
 <div id="col1">
-    <h1> Lorenzo Pompili </h1>
     <p class="profile-blurb">
         <a href="https://github.com/L-Pompili" target="_blank" class="comp-link">
             <span class="link-wrap"><i class="fab fa-github github"></i></span><span>github.com/L-Pompili</span>
@@ -24,10 +23,8 @@
             <span class="link-wrap"><i class="fab fa-linkedin linkedin"></i></span><span>www.linkedin.com/in/l-pompili</span>
         </a>
     </p>
-    <h3><a href="/cs/" class="h3">Computer and Data Science</a></h3>
-    <h3><a href="/math/" class="h3">Mathematics</a></h3>
-    <br>
-    <h5><a href="https://opc.mfo.de/person_detail?id=52693" class="h5"  target="_blank" rel="noopener noreferrer">Pictures of me (MFO)</a></h5>
 </div>
-</body>
-</html>
+
+
+
+#### [Pictures of me (MFO)](https://opc.mfo.de/person_detail?id=52693)
